@@ -1,6 +1,6 @@
+import React, { useState } from "react";
 import "./App.css";
 import DownloadPDF from "./components/DownloadPDF";
-import { useState } from "react";
 
 function App() {
   const [bound, setBound] = useState(10);
@@ -11,8 +11,8 @@ function App() {
 
   return (
     <div className="App">
-      <h2>Generate Math Problems</h2>
-      <div className="App-header">
+      <header className="App-header">
+        <h2>Generate Math Problems</h2>
         <label>
           Maximum Number:
           <input
@@ -22,10 +22,8 @@ function App() {
             min="1"
           />
         </label>
-      </div>
-      <div className="button-container">
-        <DownloadPDF bound={bound}></DownloadPDF>
-      </div>
+        <DownloadPDF bound={bound} />
+      </header>
     </div>
   );
 }
