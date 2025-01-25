@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "./App.css";
 import DownloadPDF from "./components/DownloadPDF";
+import DownloadPDF2 from "./components/DownloadPDF2";
+import DownloadSubPDF from "./components/DownloadSubPDF";
 
 function App() {
   const [bound, setBound] = useState(10);
@@ -23,6 +25,8 @@ function App() {
           />
         </label>
         <DownloadPDF bound={bound} />
+        <DownloadSubPDF bound={bound} />
+        <DownloadPDF2 bound={bound} />
       </header>
     </div>
   );

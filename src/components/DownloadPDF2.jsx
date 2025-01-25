@@ -1,7 +1,7 @@
 import React from "react";
 import { jsPDF } from "jspdf";
 
-const DownloadPDF = ({ bound }) => {
+const DownloadPDF2 = ({ bound }) => {
   const handleDownload = () => {
     const doc = new jsPDF();
 
@@ -15,13 +15,21 @@ const DownloadPDF = ({ bound }) => {
 
     doc.setFontSize(14);
 
-    // Generating random math questions
+    // Generating random math questions (50% addition, 50% subtraction)
     const generateMathQuestions = (bound) => {
       const questions = [];
       for (let i = 0; i < 100; i++) {
         const num1 = Math.floor(Math.random() * (bound - 1)) + 1;
         const num2 = Math.floor(Math.random() * (bound - 1)) + 1;
-        questions.push(`${num1} + ${num2} =`);
+        const isAddition = i < 50; // First 50 questions addition, last 50 subtraction
+        if (isAddition) {
+          questions.push(`${num1} + ${num2} =`);
+        } else {
+          // Ensure the first number is larger for subtraction to avoid negatives
+          const larger = Math.max(num1, num2);
+          const smaller = Math.min(num1, num2);
+          questions.push(`${larger} - ${smaller} =`);
+        }
       }
       return questions;
     };
@@ -48,7 +56,7 @@ const DownloadPDF = ({ bound }) => {
     doc.save("math-quiz.pdf");
   };
 
-  return <button onClick={handleDownload}>Download Add PDF</button>;
+  return <button onClick={handleDownload}>Download Add & Sub PDF</button>;
 };
 
-export default DownloadPDF;
+export default DownloadPDF2;

@@ -1,13 +1,20 @@
 import React from "react";
 import { jsPDF } from "jspdf";
 
-const DownloadPDF = ({ bound }) => {
+const DownloadSubPDF = ({ bound }) => {
   const handleDownload = () => {
     const doc = new jsPDF();
 
     // Add title and tester information at the top
     doc.setFontSize(18);
-    doc.text("Grade 4 Math Quiz", 105, 20, null, null, "center"); // Centered Title
+    doc.text(
+      "Grade 4 Math Quiz - Subtraction Only",
+      105,
+      20,
+      null,
+      null,
+      "center"
+    ); // Centered Title
     doc.setFontSize(12);
     doc.text("Name: ____________", 10, 30);
     doc.text("Date: ____________", 140, 30);
@@ -15,13 +22,15 @@ const DownloadPDF = ({ bound }) => {
 
     doc.setFontSize(14);
 
-    // Generating random math questions
+    // Generating random subtraction questions
     const generateMathQuestions = (bound) => {
       const questions = [];
       for (let i = 0; i < 100; i++) {
         const num1 = Math.floor(Math.random() * (bound - 1)) + 1;
         const num2 = Math.floor(Math.random() * (bound - 1)) + 1;
-        questions.push(`${num1} + ${num2} =`);
+        const larger = Math.max(num1, num2);
+        const smaller = Math.min(num1, num2);
+        questions.push(`${larger} - ${smaller} =`);
       }
       return questions;
     };
@@ -48,7 +57,7 @@ const DownloadPDF = ({ bound }) => {
     doc.save("math-quiz.pdf");
   };
 
-  return <button onClick={handleDownload}>Download Add PDF</button>;
+  return <button onClick={handleDownload}>Download Sub PDF</button>;
 };
 
-export default DownloadPDF;
+export default DownloadSubPDF;
