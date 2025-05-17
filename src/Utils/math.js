@@ -3,20 +3,13 @@ export function generateMultAndDivMathQuestions(
   maxOperand = 20
 ) {
   const questions = [];
-
   for (let i = 0; i < numQuestions; i++) {
-    // Randomly choose between multiplication and division
     const isMultiplication = Math.random() < 0.5;
-    let question = "";
-    if (isMultiplication) {
-      question = generateMultiplicationQuestion(maxOperand);
-    } else {
-      question = generateDivisionQuestion(maxOperand);
-    }
-
-    questions.push({ question });
+    const question = isMultiplication
+      ? generateMultiplicationQuestion(maxOperand)
+      : generateDivisionQuestions(maxOperand);
+    questions.push(question);
   }
-
   return questions;
 }
 
@@ -25,42 +18,36 @@ export function generateMultiMathQuestions(
   maxOperand = 20
 ) {
   const questions = [];
-
   for (let i = 0; i < numQuestions; i++) {
     const question = generateMultiplicationQuestion(maxOperand);
-    questions.push({ question });
+    questions.push(question);
   }
-
   return questions;
 }
 
 export function generateDivMathQuestions(numQuestions = 100, maxOperand = 20) {
   const questions = [];
-
   for (let i = 0; i < numQuestions; i++) {
-    const question = generateDivisionQuestion(maxOperand);
-    questions.push({ question });
+    const question = generateDivisionQuestions(maxOperand);
+    questions.push(question);
   }
-
   return questions;
 }
 
 export function generateAddMathQuestions(numQuestions = 100, maxOperand = 20) {
   const questions = [];
-
   for (let i = 0; i < numQuestions; i++) {
     const question = generateAddQuestion(maxOperand);
-    questions.push({ question });
+    questions.push(question);
   }
   return questions;
 }
 
 export function generateSubMathQuestions(numQuestions = 100, maxOperand = 20) {
   const questions = [];
-
   for (let i = 0; i < numQuestions; i++) {
     const question = generateSubtractionQuestion(maxOperand);
-    questions.push({ question });
+    questions.push(question);
   }
   return questions;
 }
@@ -70,65 +57,41 @@ export function generateAddAndSubMathQuestions(
   maxOperand = 20
 ) {
   const questions = [];
-
   for (let i = 0; i < numQuestions; i++) {
-    // Randomly choose between multiplication and division
     const isAdd = Math.random() < 0.5;
-    let question = "";
-    if (isAdd) {
-      question = generateAddQuestion(maxOperand);
-    } else {
-      question = generateSubtractionQuestion(maxOperand);
-    }
-
-    questions.push({ question });
+    const question = isAdd
+      ? generateAddQuestion(maxOperand)
+      : generateSubtractionQuestion(maxOperand);
+    questions.push(question);
   }
-
   return questions;
 }
 
-function generateDivisionQuestion(maxOperand = 20) {
-  // Generate a random divisor (1 to maxOperand)
-  const divisor = Math.floor(Math.random() * maxOperand) + 1;
-
-  // Generate a random quotient (1 to maxOperand)
+function generateDivisionQuestions(maxOperand = 20) {
+  const divisor = Math.floor(Math.random() * Math.min(maxOperand, 10)) + 1;
   const quotient = Math.floor(Math.random() * maxOperand) + 1;
-
-  // Calculate dividend to ensure clean division
   const dividend = divisor * quotient;
-
-  // Create question and store answer
-  return `${dividend} ÷ ${divisor} = ?`;
+  const question = `${dividend} ÷ ${divisor} = `;
+  return question;
 }
 
 function generateMultiplicationQuestion(maxOperand = 20) {
-  // Generate two random operands within the bound (1 to maxOperand)
   const operand1 = Math.floor(Math.random() * maxOperand) + 1;
   const operand2 = Math.floor(Math.random() * maxOperand) + 1;
-
-  // Format the question
   const question = `${operand1} × ${operand2} = `;
-
-  return { question };
+  return question;
 }
 
 function generateAddQuestion(bound) {
   const num1 = Math.floor(Math.random() * (bound - 1)) + 1;
   const num2 = Math.floor(Math.random() * (bound - 1)) + 1;
-  return `${num1} + ${num2} =`;
+  const question = `${num1} + ${num2} = `;
+  return question;
 }
 
 function generateSubtractionQuestion(maxNumber) {
-  // Generate two random numbers within the bound (1 to maxNumber)
   const minuend = Math.floor(Math.random() * maxNumber) + 1;
-  // Ensure subtrahend is less than or equal to minuend for non-negative result
   const subtrahend = Math.floor(Math.random() * minuend) + 1;
-
-  // Calculate the answer
-  const answer = minuend - subtrahend;
-
-  // Format the question
-  const question = `${minuend} - ${subtrahend} = ?`;
-
+  const question = `${minuend} - ${subtrahend} = `;
   return question;
 }

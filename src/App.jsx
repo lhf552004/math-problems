@@ -24,8 +24,8 @@ import {
 
 function App() {
   const [operation, setOperation] = useState("addition");
-  const [maxBound, setMaxBound] = useState("20");
-  const [questionCount, setQuestionCount] = useState("100");
+  const [maxBound, setMaxBound] = useState(20);
+  const [questionCount, setQuestionCount] = useState(100);
   const toast = useToast();
 
   // Generate questions based on operation type
@@ -53,9 +53,9 @@ function App() {
     } else if (operation === "add-sub") {
       questions = generateAddAndSubMathQuestions(count, bound);
     } else if (operation === "multiplication") {
-      questions = generateMultiMathQuestions(bound);
+      questions = generateMultiMathQuestions(count, bound);
     } else if (operation === "division") {
-      questions = generateDivMathQuestions(bound);
+      questions = generateDivMathQuestions(count, bound);
     } else if (operation === "mult-div") {
       questions = generateMultAndDivMathQuestions(count, bound);
     }
@@ -68,10 +68,8 @@ function App() {
     if (questions.length === 0) return;
 
     const doc = new jsPDF();
-
-    // Add title and tester information at the top
     doc.setFontSize(18);
-    doc.text("Math Quiz", 105, 20, null, null, "center"); // Centered Title
+    doc.text("Math Quiz", 105, 20, null, null, "center");
     doc.setFontSize(12);
     doc.text("Name:  ____________", 10, 30);
     doc.text("Date:  ____________", 140, 30);
