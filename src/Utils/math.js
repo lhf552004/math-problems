@@ -19,23 +19,6 @@ export function generateMultAndDivMathQuestions(
   return result;
 }
 
-export function generateMultiMathQuestions(
-  numQuestions = 100,
-  maxOperand = 20
-) {
-  const questions = new Set();
-  const result = [];
-
-  while (result.length < numQuestions) {
-    const [question, key] = generateMultiplicationQuestion(maxOperand);
-    if (!questions.has(key)) {
-      questions.add(key);
-      result.push(question);
-    }
-  }
-  return result;
-}
-
 export function generateDivMathQuestions(numQuestions = 100, maxOperand = 20) {
   const questions = new Set();
   const result = [];
@@ -98,7 +81,14 @@ export function generateAddAndSubMathQuestions(
   }
   return result;
 }
-
+export function generateMultiMathQuestions(
+  numQuestions = 100,
+  maxOperand = 20
+) {
+  const all = getAllMultiplicationQuestions(maxOperand);
+  shuffle(all);
+  return all.slice(0, numQuestions);
+}
 // ------------------ Updated helper functions ------------------ //
 
 function generateMultiplicationQuestion(maxOperand) {
@@ -106,6 +96,23 @@ function generateMultiplicationQuestion(maxOperand) {
   const op2 = Math.floor(Math.random() * maxOperand) + 1;
   const key = [op1, op2].sort().join("×");
   return [`${op1} × ${op2} = `, key];
+}
+
+function getAllMultiplicationQuestions(maxOperand) {
+  const all = [];
+  for (let i = 1; i <= maxOperand; i++) {
+    for (let j = i; j <= maxOperand; j++) {
+      all.push(`${i} × ${j} = `);
+    }
+  }
+  return all;
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
 }
 
 function generateDivisionQuestion(maxOperand) {
@@ -133,4 +140,16 @@ function generateSubtractionQuestion(maxNumber) {
 
   const key = `${minuend}-${subtrahend}`;
   return [`${minuend} - ${subtrahend} = `, key];
+}
+
+export function getSimpleMultiplicationTable() {
+  const questions = [];
+  for (let i = 1; i <= 9; i++) {
+    let row = "";
+    for (let j = 1; j <= i; j++) {
+      row += `${j}×${i}= \t`;
+      questions.push(row);
+    }
+  }
+  return questions;
 }
