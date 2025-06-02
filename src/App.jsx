@@ -20,6 +20,8 @@ import {
   generateMultAndDivMathQuestions,
   generateMultiMathQuestions,
   generateDivMathQuestions,
+  generateAdditionsGreaterThan11,
+  generateSubtractionsFromAdditions,
 } from "./Utils/math";
 
 function App() {
@@ -58,6 +60,10 @@ function App() {
       questions = generateDivMathQuestions(count, bound);
     } else if (operation === "mult-div") {
       questions = generateMultAndDivMathQuestions(count, bound);
+    } else if (operation === "addition11") {
+      questions = generateAdditionsGreaterThan11(count);
+    } else if (operation === "subtraction11") {
+      questions = generateSubtractionsFromAdditions(count);
     }
     return questions;
   };
@@ -77,7 +83,6 @@ function App() {
 
     doc.setFontSize(14);
 
-    const columns = 5;
     const rows = 20;
 
     let x = 10;
@@ -127,7 +132,9 @@ function App() {
           <RadioGroup value={operation} onChange={setOperation}>
             <VStack align="start" spacing={2}>
               <Radio value="addition">Addition</Radio>
+              <Radio value="addition11">Addition2</Radio>
               <Radio value="subtraction">Subtraction</Radio>
+              <Radio value="subtraction11">Subtraction2</Radio>
               <Radio value="add-sub">Addition + Subtraction</Radio>
               <Radio value="multiplication">Multiplication</Radio>
               <Radio value="division">Division</Radio>

@@ -89,6 +89,54 @@ export function generateMultiMathQuestions(
   shuffle(all);
   return all.slice(0, numQuestions);
 }
+
+export function generateAdditionsGreaterThan11(count = 100) {
+  const results = [];
+  const candidates = [];
+
+  for (let i = 1; i <= 9; i++) {
+    for (let j = 1; j <= 9; j++) {
+      if (i + j > 11) {
+        candidates.push([i, j]);
+      }
+    }
+  }
+
+  for (let k = 0; k < count; k++) {
+    const [i, j] = candidates[Math.floor(Math.random() * candidates.length)];
+    results.push(`${i} + ${j} = `);
+  }
+
+  return results;
+}
+
+export function generateSubtractionsFromAdditions(count = 100) {
+  const results = [];
+  const sums = [];
+
+  // 构造所有 1~9 + 1~9 中和大于11的组合，记录其和
+  for (let i = 1; i <= 9; i++) {
+    for (let j = 1; j <= 9; j++) {
+      const sum = i + j;
+      if (sum > 11) {
+        sums.push(sum);
+      }
+    }
+  }
+
+  // 随机选 count 个和，生成减法表达式
+  for (let k = 0; k < count; k++) {
+    const total = sums[Math.floor(Math.random() * sums.length)];
+
+    // 减数要小于 total，结果为正整数
+    const subtrahend = Math.floor(Math.random() * (total - 1)) + 1;
+
+    results.push(`${total} - ${subtrahend} = `);
+  }
+
+  return results;
+}
+
 // ------------------ Updated helper functions ------------------ //
 
 function generateMultiplicationQuestion(maxOperand) {
