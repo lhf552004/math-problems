@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./App.css";
 import {
   Box,
   Heading,
@@ -19,9 +20,11 @@ import {
   generateMultAndDivMathQuestions,
   generateMultiMathQuestions,
   generateDivMathQuestions,
+  generateAdditionsGreaterThan11,
+  generateSubtractionsFromAdditions,
 } from "./Utils/math";
 
-const MathQuiz = () => {
+function MathQuiz() {
   const [operation, setOperation] = useState("addition");
   const [maxBound, setMaxBound] = useState(20);
   const [questionCount, setQuestionCount] = useState(100);
@@ -57,6 +60,10 @@ const MathQuiz = () => {
       questions = generateDivMathQuestions(count, bound);
     } else if (operation === "mult-div") {
       questions = generateMultAndDivMathQuestions(count, bound);
+    } else if (operation === "addition11") {
+      questions = generateAdditionsGreaterThan11(count);
+    } else if (operation === "subtraction11") {
+      questions = generateSubtractionsFromAdditions(count);
     }
     return questions;
   };
@@ -76,7 +83,6 @@ const MathQuiz = () => {
 
     doc.setFontSize(14);
 
-    const columns = 5;
     const rows = 20;
 
     let x = 10;
@@ -121,12 +127,14 @@ const MathQuiz = () => {
       <VStack spacing={6} align="stretch">
         <FormControl as="fieldset">
           <FormLabel as="legend" fontWeight="bold">
-            olimp Select Operation
+            Select Operation
           </FormLabel>
           <RadioGroup value={operation} onChange={setOperation}>
             <VStack align="start" spacing={2}>
               <Radio value="addition">Addition</Radio>
+              <Radio value="addition11">Addition2</Radio>
               <Radio value="subtraction">Subtraction</Radio>
+              <Radio value="subtraction11">Subtraction2</Radio>
               <Radio value="add-sub">Addition + Subtraction</Radio>
               <Radio value="multiplication">Multiplication</Radio>
               <Radio value="division">Division</Radio>
@@ -168,6 +176,6 @@ const MathQuiz = () => {
       </VStack>
     </Box>
   );
-};
+}
 
 export default MathQuiz;
