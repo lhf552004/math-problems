@@ -27,6 +27,10 @@ const CrosswordCreator = () => {
   const [cellUsed, setCellUsed] = useState(
     emptyGrid().map((row) => row.map(() => false))
   );
+  const [numbersGrid, setNumbersGrid] = useState(
+    emptyGrid().map((row) => row.map(() => ""))
+  );
+  const [clues, setClues] = useState([]);
   const [showGrid, setShowGrid] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
 
@@ -40,7 +44,17 @@ const CrosswordCreator = () => {
     setEntries([...entries, { word: "", clue: "" }]);
   };
 
-  const placeWord = (grid, used, word, startRow, startCol, direction) => {
+  const placeWord = (
+    grid,
+    used,
+    numbers,
+    word,
+    startRow,
+    startCol,
+    direction,
+    number
+  ) => {
+    numbers[startRow][startCol] = number;
     for (let i = 0; i < word.length; i++) {
       const r = direction === "across" ? startRow : startRow + i;
       const c = direction === "across" ? startCol + i : startCol;
@@ -53,17 +67,10 @@ const CrosswordCreator = () => {
     for (let i = 0; i < word.length; i++) {
       const r = direction === "across" ? row : row + i;
       const c = direction === "across" ? col + i : col;
-
       if (r < 0 || c < 0 || r >= GRID_SIZE || c >= GRID_SIZE) return false;
-
       const cell = grid[r][c];
-
-      // OK if same letter (intersect), fail if conflict
       if (cell && cell !== word[i]) return false;
-
-      // Check adjacent if this cell is empty (new placement)
       if (!cell) {
-        // For across, avoid vertical neighbors
         if (direction === "across") {
           if (
             (r > 0 && grid[r - 1][c]) ||
@@ -71,7 +78,6 @@ const CrosswordCreator = () => {
           )
             return false;
         }
-        // For down, avoid horizontal neighbors
         if (direction === "down") {
           if (
             (c > 0 && grid[r][c - 1]) ||
@@ -81,19 +87,15 @@ const CrosswordCreator = () => {
         }
       }
     }
-
-    // Check the cells *before* and *after* the word
     const beforeR = direction === "across" ? row : row - 1;
     const beforeC = direction === "across" ? col - 1 : col;
     const afterR = direction === "across" ? row : row + word.length;
     const afterC = direction === "across" ? col + word.length : col;
-
     if (
       (beforeR >= 0 && beforeC >= 0 && grid[beforeR][beforeC]) ||
       (afterR < GRID_SIZE && afterC < GRID_SIZE && grid[afterR][afterC])
     )
       return false;
-
     return true;
   };
 
@@ -104,12 +106,10 @@ const CrosswordCreator = () => {
         if (cell) {
           for (let i = 0; i < word.length; i++) {
             if (word[i] === cell) {
-              // Try vertical
               const startRow = r - i;
               if (canPlace(grid, word, startRow, c, "down")) {
                 return { row: startRow, col: c, direction: "down" };
               }
-              // Try horizontal
               const startCol = c - i;
               if (canPlace(grid, word, r, startCol, "across")) {
                 return { row: r, col: startCol, direction: "across" };
@@ -122,59 +122,73 @@ const CrosswordCreator = () => {
     return null;
   };
 
-  const maskGrid = (solutionGrid, usageGrid, revealRatio = 0.2) => {
+  const maskGrid = (solutionGrid, usageGrid) => {
     const masked = [];
-
     for (let r = 0; r < GRID_SIZE; r++) {
       const row = [];
       for (let c = 0; c < GRID_SIZE; c++) {
         const letter = solutionGrid[r][c];
-        if (!letter) {
-          row.push("");
-        } else {
-          row.push(Math.random() < revealRatio ? letter : "");
-        }
+        row.push(letter ? "" : ""); // always blank
       }
       masked.push(row);
     }
-
     return masked;
   };
 
   const generateGrid = () => {
     const newGrid = emptyGrid();
     const usageGrid = emptyGrid().map((row) => row.map(() => false));
+    const numberGrid = emptyGrid().map((row) => row.map(() => ""));
     const center = Math.floor(GRID_SIZE / 2);
 
     const sortedEntries = entries
       .filter((e) => e.word)
       .sort((a, b) => b.word.length - a.word.length);
-
     if (!sortedEntries.length) return;
 
-    const first = sortedEntries[0].word;
-    const startCol = center - Math.floor(first.length / 2);
-    placeWord(newGrid, usageGrid, first, center, startCol, "across");
+    let clueNumber = 1;
+    const clueList = [];
+
+    const first = sortedEntries[0];
+    const startCol = center - Math.floor(first.word.length / 2);
+    placeWord(
+      newGrid,
+      usageGrid,
+      numberGrid,
+      first.word,
+      center,
+      startCol,
+      "across",
+      clueNumber
+    );
+    clueList.push(`${clueNumber}. (across) ${first.clue}`);
+    clueNumber++;
 
     for (let i = 1; i < sortedEntries.length; i++) {
       const word = sortedEntries[i].word;
+      const clue = sortedEntries[i].clue;
       const placement = findIntersection(newGrid, word);
       if (placement) {
         placeWord(
           newGrid,
           usageGrid,
+          numberGrid,
           word,
           placement.row,
           placement.col,
-          placement.direction
+          placement.direction,
+          clueNumber
         );
+        clueList.push(`${clueNumber}. (${placement.direction}) ${clue}`);
+        clueNumber++;
       }
     }
 
-    const masked = maskGrid(newGrid, usageGrid);
-    setGrid(masked);
+    setGrid(maskGrid(newGrid, usageGrid));
     setSolutionGrid(newGrid);
     setCellUsed(usageGrid);
+    setNumbersGrid(numberGrid);
+    setClues(clueList);
     setShowGrid(true);
     setShowSolution(false);
   };
@@ -182,15 +196,26 @@ const CrosswordCreator = () => {
   const downloadPDF = async () => {
     const canvas = await html2canvas(document.getElementById("crossword-grid"));
     const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF();
+    const pdf = new jsPDF("p", "mm", "a4");
     pdf.addImage(imgData, "PNG", 10, 10, 180, 180);
+
+    let y = 200;
+    pdf.setFontSize(10);
+    clues.forEach((clue) => {
+      if (y > 280) {
+        pdf.addPage();
+        y = 20;
+      }
+      pdf.text(clue, 10, y);
+      y += 6;
+    });
+
     pdf.save("crossword.pdf");
   };
 
   return (
     <Box p={6}>
       <Heading mb={4}>Crossword Generator</Heading>
-
       <VStack spacing={4} align="stretch">
         {entries.map((entry, index) => (
           <Flex key={index} gap={4} flexWrap="wrap">
@@ -230,6 +255,9 @@ const CrosswordCreator = () => {
             border="1px solid #ccc"
             p={4}
             overflow="auto"
+            maxW="fit-content"
+            maxH="80vh"
+            mx="auto"
           >
             <Grid templateColumns={`repeat(${GRID_SIZE}, 30px)`} gap={1}>
               {grid.map((row, rowIndex) =>
@@ -240,12 +268,23 @@ const CrosswordCreator = () => {
                     h="30px"
                     bg={cellUsed[rowIndex][colIndex] ? "gray.200" : "white"}
                     border="1px solid black"
+                    position="relative"
                     display="flex"
                     justifyContent="center"
                     alignItems="center"
                   >
+                    <Text
+                      fontWeight="bold"
+                      fontSize="xs"
+                      position="absolute"
+                      top="1px"
+                      left="2px"
+                    >
+                      {numbersGrid[rowIndex][colIndex]}
+                    </Text>
                     <Text fontWeight="bold">
-                      {showSolution ? solutionGrid[rowIndex][colIndex] : cell}
+                      {/* No letters shown in user view */}
+                      {showSolution ? solutionGrid[rowIndex][colIndex] : ""}
                     </Text>
                   </GridItem>
                 ))
