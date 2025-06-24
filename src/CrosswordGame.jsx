@@ -196,13 +196,39 @@ const CrosswordCreator = () => {
   const downloadPDF = async () => {
     const canvas = await html2canvas(document.getElementById("crossword-grid"));
     const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-    pdf.addImage(imgData, "PNG", 10, 10, 180, 180);
 
-    let y = 200;
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pageWidth = pdf.internal.pageSize.getWidth(); // 210mm
+    const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
+
+    // Max available dimensions (with margins)
+    const margin = 10;
+    const maxWidth = pageWidth - 2 * margin;
+    const maxHeight = pageHeight - 2 * margin;
+
+    // Calculate aspect-fit dimensions
+    const imgRatio = canvas.width / canvas.height;
+    let imgWidth = maxWidth;
+    let imgHeight = imgWidth / imgRatio;
+
+    if (imgHeight > maxHeight) {
+      imgHeight = maxHeight;
+      imgWidth = imgHeight * imgRatio;
+    }
+
+    const xOffset = (pageWidth - imgWidth) / 2;
+    const yOffset = margin;
+
+    // Draw image (centered, scaled)
+    pdf.addImage(imgData, "PNG", xOffset, yOffset, imgWidth, imgHeight);
+
+    // Start second page for clues
+    pdf.addPage();
     pdf.setFontSize(10);
+    let y = 20;
+
     clues.forEach((clue) => {
-      if (y > 280) {
+      if (y > pageHeight - 20) {
         pdf.addPage();
         y = 20;
       }
