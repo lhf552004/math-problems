@@ -201,3 +201,28 @@ export function getSimpleMultiplicationTable() {
   }
   return questions;
 }
+
+export function generateMultiplicationTableNo1(count = 81) {
+  const pool = [];
+  for (let i = 2; i <= 9; i++) {
+    for (let j = 2; j <= 9; j++) {
+      pool.push(`${i} × ${j} =`);
+    }
+  }
+  return shuffleAndSlice(pool, count);
+}
+
+export function generateDivisionTableNo1(count = 81) {
+  const pool = [];
+  for (let i = 2; i <= 9; i++) {
+    for (let j = 2; j <= 9; j++) {
+      pool.push(`${i * j} ÷ ${j} =`);
+    }
+  }
+  return shuffleAndSlice(pool, count);
+}
+
+function shuffleAndSlice(arr, count) {
+  const shuffled = [...arr].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}

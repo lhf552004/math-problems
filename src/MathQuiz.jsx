@@ -22,6 +22,8 @@ import {
   generateDivMathQuestions,
   generateAdditionsGreaterThan11,
   generateSubtractionsFromAdditions,
+  generateMultiplicationTableNo1,
+  generateDivisionTableNo1,
 } from "./Utils/math";
 
 function MathQuiz() {
@@ -64,6 +66,10 @@ function MathQuiz() {
       questions = generateAdditionsGreaterThan11(count);
     } else if (operation === "subtraction11") {
       questions = generateSubtractionsFromAdditions(count);
+    } else if (operation === "multiplicationTable") {
+      questions = generateMultiplicationTableNo1(count);
+    } else if (operation === "divisionTable") {
+      questions = generateDivisionTableNo1(count);
     }
     return questions;
   };
@@ -139,20 +145,26 @@ function MathQuiz() {
               <Radio value="multiplication">Multiplication</Radio>
               <Radio value="division">Division</Radio>
               <Radio value="mult-div">Multiplication + Division</Radio>
+              <Radio value="multiplicationTable">
+                Multiplication in Table (Without 1)
+              </Radio>
+              <Radio value="divisionTable">Division in Table (Without 1)</Radio>
             </VStack>
           </RadioGroup>
         </FormControl>
 
-        <FormControl>
-          <FormLabel fontWeight="bold">Maximum Bound for Numbers</FormLabel>
-          <Input
-            type="number"
-            value={maxBound}
-            onChange={(e) => setMaxBound(e.target.value)}
-            placeholder="e.g., 20"
-            min={1}
-          />
-        </FormControl>
+        {!["multiplicationTable", "divisionTable"].includes(operation) && (
+          <FormControl>
+            <FormLabel fontWeight="bold">Maximum Bound for Numbers</FormLabel>
+            <Input
+              type="number"
+              value={maxBound}
+              onChange={(e) => setMaxBound(e.target.value)}
+              placeholder="e.g., 20"
+              min={1}
+            />
+          </FormControl>
+        )}
 
         <FormControl>
           <FormLabel fontWeight="bold">Number of Questions</FormLabel>
