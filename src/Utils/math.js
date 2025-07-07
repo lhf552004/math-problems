@@ -81,13 +81,34 @@ export function generateAddAndSubMathQuestions(
   }
   return result;
 }
+
 export function generateMultiMathQuestions(
   numQuestions = 100,
-  maxOperand = 20
+  maxOperand = 20,
+  minOperand = 10
 ) {
-  const all = getAllMultiplicationQuestions(maxOperand);
-  shuffle(all);
-  return all.slice(0, numQuestions);
+  const questions = new Set();
+  const result = [];
+
+  // Calculate maximum unique ordered pairs
+  const maxPossibleQuestions = (maxOperand - minOperand + 1) ** 2; // 11 * 11 = 121
+  if (numQuestions > maxPossibleQuestions) {
+    throw new Error(
+      `Cannot generate ${numQuestions} unique questions. Maximum possible is ${maxPossibleQuestions}.`
+    );
+  }
+
+  while (result.length < numQuestions) {
+    const [question, key] = generateMultiplicationQuestion(
+      maxOperand,
+      minOperand
+    );
+    if (!questions.has(key)) {
+      questions.add(key);
+      result.push(question);
+    }
+  }
+  return result;
 }
 
 export function generateAdditionsGreaterThan11(count = 100) {
@@ -139,28 +160,13 @@ export function generateSubtractionsFromAdditions(count = 100) {
 
 // ------------------ Updated helper functions ------------------ //
 
-function generateMultiplicationQuestion(maxOperand) {
-  const op1 = Math.floor(Math.random() * maxOperand) + 1;
-  const op2 = Math.floor(Math.random() * maxOperand) + 1;
+function generateMultiplicationQuestion(maxOperand, minOperand) {
+  const op1 =
+    Math.floor(Math.random() * (maxOperand - minOperand + 1)) + minOperand;
+  const op2 =
+    Math.floor(Math.random() * (maxOperand - minOperand + 1)) + minOperand;
   const key = [op1, op2].sort().join("×");
   return [`${op1} × ${op2} = `, key];
-}
-
-function getAllMultiplicationQuestions(maxOperand) {
-  const all = [];
-  for (let i = 1; i <= maxOperand; i++) {
-    for (let j = i; j <= maxOperand; j++) {
-      all.push(`${i} × ${j} = `);
-    }
-  }
-  return all;
-}
-
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
 }
 
 function generateDivisionQuestion(maxOperand) {
