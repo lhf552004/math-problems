@@ -87,9 +87,6 @@ export function generateMultiMathQuestions(
   maxOperand = 20,
   minOperand = 10
 ) {
-  const questions = new Set();
-  const result = [];
-
   // Calculate maximum unique ordered pairs
   const maxPossibleQuestions = (maxOperand - minOperand + 1) ** 2; // 11 * 11 = 121
   if (numQuestions > maxPossibleQuestions) {
@@ -98,16 +95,26 @@ export function generateMultiMathQuestions(
     );
   }
 
-  while (result.length < numQuestions) {
-    const [question, key] = generateMultiplicationQuestion(
-      maxOperand,
-      minOperand
-    );
-    if (!questions.has(key)) {
-      questions.add(key);
-      result.push(question);
+  // Generate all possible operand pairs
+  const allPairs = [];
+  for (let i = minOperand; i <= maxOperand; i++) {
+    for (let j = minOperand; j <= maxOperand; j++) {
+      allPairs.push([i, j]);
     }
   }
+
+  // Shuffle the pairs to randomize (optional)
+  for (let i = allPairs.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allPairs[i], allPairs[j]] = [allPairs[j], allPairs[i]]; // Swap
+  }
+
+  // Take the first `numQuestions` pairs and format as questions
+  const result = allPairs.slice(0, numQuestions).map(([a, b]) => {
+    const question = `${a} × ${b} = `;
+    return question;
+  });
+
   return result;
 }
 
